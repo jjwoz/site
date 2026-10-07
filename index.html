@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit — Ship ideas at the speed of thought</title>
+<meta name="description" content="A landing page that glows. Built with pure HTML, CSS and a sprinkle of JS.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
+<style>
+  :root {
+    --bg: #05060f;
+    --fg: #eef0ff;
+    --muted: #8b90b8;
+    --a: #7c5cff;
+    --b: #00e5ff;
+    --c: #ff4ecd;
+    --card: rgba(255,255,255,.04);
+    --line: rgba(255,255,255,.1);
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+  canvas#stars { position: fixed; inset: 0; z-index: 0; }
+  .blob {
+    position: fixed; width: 60vmax; height: 60vmax; border-radius: 50%;
+    filter: blur(120px); opacity: .28; z-index: 0; pointer-events: none;
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+  .blob.one { background: var(--a); top: -25vmax; left: -15vmax; }
+  .blob.two { background: var(--c); bottom: -30vmax; right: -20vmax; animation-delay: -12s; }
+  @keyframes drift { to { transform: translate(8vmax, 6vmax) scale(1.15); } }
+
+  main, nav, footer { position: relative; z-index: 1; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 24px; max-width: 1100px; margin: 0 auto; }
+  .logo { font-weight: 800; letter-spacing: .02em; font-size: 20px; }
+  .logo span { background: linear-gradient(90deg, var(--b), var(--a)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  nav a.link { color: var(--muted); text-decoration: none; margin-left: 24px; font-size: 14px; transition: color .2s; }
+  nav a.link:hover { color: var(--fg); }
+
+  .hero { text-align: center; padding: 12vh 0 10vh; }
+  .pill {
+    display: inline-flex; gap: 8px; align-items: center;
+    padding: 6px 14px; border-radius: 999px; font-size: 13px; color: var(--muted);
+    background: var(--card); border: 1px solid var(--line); backdrop-filter: blur(8px);
+  }
+  .pill i { width: 8px; height: 8px; border-radius: 50%; background: #3dff9a; box-shadow: 0 0 12px #3dff9a; animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+
+  h1 {
+    font-size: clamp(2.6rem, 8vw, 6rem); line-height: 1.02; font-weight: 800;
+    letter-spacing: -.04em; margin: 28px auto 24px; max-width: 14ch;
+  }
+  .grad {
+    background: linear-gradient(100deg, var(--b), var(--a) 40%, var(--c) 80%, var(--b));
+    background-size: 250% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: shine 6s linear infinite;
+  }
+  @keyframes shine { to { background-position: 250% 0; } }
+  .sub { color: var(--muted); font-size: clamp(1rem, 2vw, 1.25rem); max-width: 56ch; margin: 0 auto 40px; }
+
+  .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    position: relative; padding: 14px 28px; border-radius: 14px; font-weight: 600; font-size: 15px;
+    text-decoration: none; color: var(--fg); border: 1px solid var(--line); background: var(--card);
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .btn:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.3); }
+  .btn.primary {
+    border: 0; color: #fff;
+    background: linear-gradient(135deg, var(--a), var(--c));
+    box-shadow: 0 10px 40px -8px var(--a);
+  }
+  .btn.primary:hover { box-shadow: 0 14px 56px -6px var(--c); }
+
+  .orbit { position: relative; width: min(520px, 90vw); aspect-ratio: 1; margin: 8vh auto 0; }
+  .ring { position: absolute; inset: 0; border-radius: 50%; border: 1px dashed rgba(255,255,255,.15); animation: spin 30s linear infinite; }
+  .ring.r2 { inset: 14%; animation-duration: 20s; animation-direction: reverse; }
+  .ring.r3 { inset: 28%; animation-duration: 12s; }
+  .ring b { position: absolute; top: -7px; left: 50%; width: 14px; height: 14px; border-radius: 50%; background: var(--b); box-shadow: 0 0 20px var(--b); }
+  .ring.r2 b { background: var(--c); box-shadow: 0 0 20px var(--c); }
+  .ring.r3 b { background: var(--a); box-shadow: 0 0 20px var(--a); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .planet {
+    position: absolute; inset: 40%; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff, var(--b) 25%, var(--a) 60%, #120a40);
+    box-shadow: 0 0 80px var(--a), inset -10px -10px 30px rgba(0,0,0,.5);
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 50% { transform: translateY(-10px); } }
+
+  section { padding: 12vh 0 0; }
+  h2 { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -.03em; line-height: 1.1; text-align: center; margin-bottom: 14px; }
+  .lead { text-align: center; color: var(--muted); max-width: 52ch; margin: 0 auto 56px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .card {
+    position: relative; padding: 28px; border-radius: 20px; background: var(--card);
+    border: 1px solid var(--line); backdrop-filter: blur(10px); overflow: hidden;
+    transition: transform .25s, border-color .25s;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0; opacity: 0; transition: opacity .3s;
+    background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), rgba(124,92,255,.22), transparent 60%);
+  }
+  .card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.25); }
+  .card:hover::before { opacity: 1; }
+  .card > * { position: relative; }
+  .icon { font-size: 28px; width: 52px; height: 52px; display: grid; place-items: center; border-radius: 14px; margin-bottom: 18px; background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(0,229,255,.2)); }
+  .card h3 { font-size: 19px; margin-bottom: 8px; }
+  .card p { color: var(--muted); font-size: 15px; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; text-align: center; }
+  .stat strong { display: block; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -.03em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+
+  .final {
+    text-align: center; padding: 64px 24px; border-radius: 28px; border: 1px solid var(--line);
+    background: linear-gradient(135deg, rgba(124,92,255,.18), rgba(255,78,205,.12));
+    backdrop-filter: blur(10px);
+  }
+  .final h2 { margin-bottom: 12px; }
+  .final .lead { margin-bottom: 32px; }
+
+  footer { text-align: center; color: var(--muted); font-size: 13px; padding: 60px 24px 40px; }
+
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s ease, transform .8s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+  @media (max-width: 560px) { nav a.link { display: none; } }
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="blob one" aria-hidden="true"></div>
+<div class="blob two" aria-hidden="true"></div>
+
+<nav>
+  <div class="logo">🪐 <span>Orbit</span></div>
+  <div>
+    <a class="link" href="#features">Features</a>
+    <a class="link" href="#numbers">Numbers</a>
+    <a class="link" href="#join">Join</a>
+  </div>
+</nav>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="pill"><i></i> Now live — v1.0 has landed</div>
+    <h1>Ship ideas at the <span class="grad">speed of thought</span></h1>
+    <p class="sub">Orbit is a tiny, blazing-fast launchpad for your next big thing. No bloat, no build step — just pure momentum.</p>
+    <div class="cta">
+      <a class="btn primary" href="#join">Get started →</a>
+      <a class="btn" href="#features">See how it works</a>
+    </div>
+    <div class="orbit" aria-hidden="true">
+      <div class="ring"><b></b></div>
+      <div class="ring r2"><b></b></div>
+      <div class="ring r3"><b></b></div>
+      <div class="planet"></div>
+    </div>
+  </header>
+
+  <section id="features">
+    <h2 class="reveal">Built for <span class="grad">lift-off</span></h2>
+    <p class="lead reveal">Everything you need to go from zero to launched, nothing you don't.</p>
+    <div class="grid">
+      <article class="card reveal"><div class="icon">⚡</div><h3>Instant everything</h3><p>Static, edge-cached and featherweight. Pages load before you finish blinking.</p></article>
+      <article class="card reveal"><div class="icon">🎨</div><h3>Gorgeous by default</h3><p>Glassy cards, living gradients and buttery motion — all in a single file.</p></article>
+      <article class="card reveal"><div class="icon">🛰️</div><h3>Deploy anywhere</h3><p>Push to Git and watch it go live. Zero config, zero dependencies, zero drama.</p></article>
+      <article class="card reveal"><div class="icon">♿</div><h3>Respectful of users</h3><p>Responsive, keyboard friendly and honors reduced-motion preferences.</p></article>
+    </div>
+  </section>
+
+  <section id="numbers">
+    <div class="stats reveal">
+      <div class="stat"><strong data-count="100">0</strong><span>Lighthouse score</span></div>
+      <div class="stat"><strong data-count="0">0</strong><span>Dependencies</span></div>
+      <div class="stat"><strong data-count="1">0</strong><span>File to edit</span></div>
+      <div class="stat"><strong data-count="10" data-suffix="x">0</strong><span>Vibes</span></div>
+    </div>
+  </section>
+
+  <section id="join">
+    <div class="final reveal">
+      <h2>Ready to <span class="grad">orbit</span>?</h2>
+      <p class="lead">Make this page yours — edit <code>index.html</code>, push, and it's live.</p>
+      <div class="cta"><a class="btn primary" href="#">Launch now 🚀</a></div>
+    </div>
+  </section>
+</main>
+
+<footer>© <span id="year"></span> Orbit. Made with ✨ and Claude Code.</footer>
+
+<script>
+  // Starfield
+  const cv = document.getElementById('stars'), ctx = cv.getContext('2d');
+  let W, H, stars = [], mx = 0, my = 0;
+  function resize() {
+    W = cv.width = innerWidth; H = cv.height = innerHeight;
+    stars = Array.from({ length: Math.min(180, Math.floor(W * H / 9000)) }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      z: Math.random() * 1.8 + .2, t: Math.random() * 6.28
+    }));
+  }
+  addEventListener('resize', resize); resize();
+  addEventListener('pointermove', e => { mx = (e.clientX / W - .5); my = (e.clientY / H - .5); });
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  (function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const s of stars) {
+      s.t += .02; if (!still) s.y -= s.z * .08; if (s.y < 0) s.y = H;
+      const x = s.x - mx * s.z * 30, y = s.y - my * s.z * 30;
+      ctx.globalAlpha = .4 + Math.sin(s.t) * .3;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(x, y, s.z * .7, 0, 6.28); ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  })();
+
+  // Card spotlight
+  document.querySelectorAll('.card').forEach(c => c.addEventListener('pointermove', e => {
+    const r = c.getBoundingClientRect();
+    c.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    c.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  }));
+
+  // Reveal + count-up
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in'); io.unobserve(e.target);
+    e.target.querySelectorAll('[data-count]').forEach(n => {
+      const end = +n.dataset.count, suf = n.dataset.suffix || '', t0 = performance.now();
+      (function tick(t) {
+        const p = Math.min((t - t0) / 1400, 1);
+        n.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))) + suf;
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    });
+  }), { threshold: .2 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+</body>
+</html>
